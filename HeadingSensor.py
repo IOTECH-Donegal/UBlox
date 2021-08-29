@@ -25,7 +25,7 @@ print('3. Outputs to an IP address and port for other applications to use.')
 # Configure the serial port, this should be ttyS0
 Serial_Port1 = serial.Serial(
     # For Windows
-    port='COM10',
+    port='COM13',
     # For RPi
     #port='/dev/ttyS0',
     baudrate=115200,
@@ -63,7 +63,15 @@ try:
                 if byte3 in ubc.UBX_CLASS:
                     if ubc.UBX_CLASS[byte3] == 'NAV':
                         if byte4 in ubm.UBX_NAV:
-                            print(f'UBX:{ubm.UBX_NAV[byte4]}')
+                            # NAV-RELPOSNED
+                            if byte4 == b"\x3c":
+                                print('NAV-RELPOSNED')
+                                version = ubx_payload[0]
+                                reserved = ubx_payload[1]
+                                refStationId = ubx_payload[2]
+                                iTOW = ubx_payload[3:6]
+                                relPosN = ubx_payload[7]
+                                print(relPosN)
 
         # Check for NMEA0183, leading with a $ symbol
         elif byte1 == b"\x24":
@@ -73,7 +81,9 @@ try:
 
         # Check for AIS, leading with a ! symbol
         elif byte1 == b"\x21":
-            print(Serial_Port1.readline())
+            nmea_full_bytes = Serial_Port1.readline()
+            nmea_full_string = nmea_full_bytes.decode("utf-8")
+            print(f'AIS: {nmea_full_string[0:5]}')
 
         # Check for RTCM corrections
         elif byte1 == b"\xd3":

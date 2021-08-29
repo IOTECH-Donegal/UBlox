@@ -3,3 +3,8 @@ UBX_NAV = {
     b"\x02": "NAV-POSLLH",
     b"\x3c": "NAV-RELPOSNED"
 }
+
+UBX_RXM = {
+    b"\x02": "RXM-MEASX",
+    b"\x32": "RXM-RTCM"
+}
