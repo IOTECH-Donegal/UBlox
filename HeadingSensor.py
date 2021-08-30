@@ -12,20 +12,17 @@ By: JOR
 
 from datetime import datetime
 import serial
-import binascii
-
-
-
+import sys
 import ubx.ClassID as ubc
 import ubx.MessageID as ubm
 import ubx.Parser
 
 
 print('***** Heading Sensor *****')
-print('Accepts mixed NMEA/UBX/RTCM data from a serial port and:')
+print('Accepts mixed UBX-RELPOSNED from a serial port and:')
 print('1. Extracts heading information')
 print('2. Outputs a NMEA sentence for other applications to use.')
-print('3. Outputs to an IP address and port for other applications to use.')
+print('3. Optionally, outputs to an IP address and port for other applications to use.')
 
 # Configure the serial port, this should be ttyS0
 Serial_Port1 = serial.Serial(
@@ -74,42 +71,20 @@ try:
                             if byte4 == b"\x3c":
                                 heading = ubx.Parser.nav_relposned(ubx_payload)
                                 print(heading)
-
-
-
-        # Check for NMEA0183, leading with a $ symbol
-        elif byte1 == b"\x24":
-            nmea_full_bytes = Serial_Port1.readline()
-            nmea_full_string = nmea_full_bytes.decode("utf-8")
-            print(f'NMEA: {nmea_full_string[0:5]}')
-
-        # Check for AIS, leading with a ! symbol
-        elif byte1 == b"\x21":
-            nmea_full_bytes = Serial_Port1.readline()
-            nmea_full_string = nmea_full_bytes.decode("utf-8")
-            print(f'AIS: {nmea_full_string[0:5]}')
-
-        # Check for RTCM corrections
-        elif byte1 == b"\xd3":
-            # Find the message length
-            byte2and3 = Serial_Port1.read(2)
-            # The first 6 bits are reserved, but always zero, so convert the first two bytes directly to int
-            length_of_payload = int.from_bytes(byte2and3, "big", signed=False)
-            # Read the payload from the buffer
-            rtcm_payload = Serial_Port1.read(length_of_payload)
-            # Locate the message ID and convert it to an INT, its 12 bits of 16 so divide by 16
-            message_id_bytes = rtcm_payload[0:2]
-            message_id_int = int.from_bytes(message_id_bytes, "big")/16
-            print(f'RTCM3: {str(message_id_int)}')
-            # Finally extract the RTCM CRC
-            rtcm_crc = Serial_Port1.read(3)
         else:
-            print(f"What is {byte1}")
+            print(f"What is {byte1} ??")
 
-
+except serial.SerialException as err:
+    print("Serial lort error: {0}".format(err))
+except OSError as err:
+    print("OS error: {0}".format(err))
+except ValueError as err:
+    print("Value Error error: {0}".format(err))
 except KeyboardInterrupt:
     print("\n" + "Caught keyboard interrupt, exiting")
     exit(0)
+except:
+    print("Unexpected error:", sys.exc_info()[0])
 finally:
     print("Exiting Main Thread")
     exit(0)
