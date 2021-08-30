@@ -41,12 +41,13 @@ Serial_Port1.flushInput()
 # Main Loop
 try:
     print("press [ctrl][c] at any time to exit...")
+    # Continuous loop until [ctrl][c]
     while True:
+        # Read the first byte, if no byte, loop
         byte1 = Serial_Port1.read(1)
         if len(byte1) <1:
             break
-
-        # Check for UBX
+        # Check for UBX header = xB5 and X62, Unicode = µb
         if byte1 == b"\xb5":
             byte2 = Serial_Port1.read(1)
             if len(byte2) < 1:
@@ -58,20 +59,42 @@ try:
                 byte4 = Serial_Port1.read(1)
                 # Get the UBX payload length
                 byte5and6 = Serial_Port1.read(2)
+                # Calculate the length of the payload
                 length_of_payload = int.from_bytes(byte5and6, "little", signed=False)
+                # Read the buffer for the payload length, should be 64 bytes
                 ubx_payload = Serial_Port1.read(length_of_payload)
+
+                # Last two bytes are 2*CRC
+                ubx_crc_a_int = int.from_bytes(Serial_Port1.read(1), "little")
+                ubx_crc_b_int = int.from_bytes(Serial_Port1.read(1), "little")
+
+                # Calculate CRC using CLASS + MESSAGE + LENGTH + PAYLOAD
+                payload_for_crc = byte3 + byte4 + byte5and6 + ubx_payload
+                # Go get the two CRCs
+                crc_a, crc_b = ubx.Parser.crc(payload_for_crc)
+                # Now catch the error if there is one
+                if ubx_crc_a_int != crc_a:
+                    print(f'CRC_A Error, {ubx_crc_a_int} not equal to {crc_a}')
+                    break
+                if ubx_crc_b_int != crc_b:
+                    print(f'CRC_B Error, {ubx_crc_b_int} not equal to {crc_b}')
+                    break
+
                 # For diagnostics
                 # print(binascii.hexlify(ubx_payload))
-                ubx_crc = Serial_Port1.read(2)
 
+                # Check if a valid class
                 if byte3 in ubc.UBX_CLASS:
+                    # Check if class = NAV
                     if ubc.UBX_CLASS[byte3] == 'NAV':
+                        # Check if a valid message
                         if byte4 in ubm.UBX_NAV:
-                            # NAV-RELPOSNED
+                            # Check for NAV-RELPOSNED
                             if byte4 == b"\x3c":
                                 heading = ubx.Parser.nav_relposned(ubx_payload)
                                 print(heading)
         else:
+            # Found some junk, no idea what to do with it
             print(f"What is {byte1} ??")
 
 except serial.SerialException as err:

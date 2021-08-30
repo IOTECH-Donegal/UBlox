@@ -49,3 +49,19 @@ def nav_relposned(ubx_payload):
     relPosHeading_in_deg = int.from_bytes(relPosHeading, "little", signed=False) / 100000
 
     return relPosHeading_in_deg
+
+'''
+8-bit Fletcher algorithm, which is used in the TCP standard RFC 1145
+From UBlox Interface Descrip[tion manual
+'''
+def crc(ubx_payload):
+    crc_a = 0
+    crc_b = 0
+
+    for byte in ubx_payload:
+        crc_a += byte
+        crc_a &= 0xFF
+        crc_b += crc_a
+        crc_b &= 0xFF
+    return crc_a, crc_b
+
