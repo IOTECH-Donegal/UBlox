@@ -101,7 +101,7 @@ try:
                                 # Heading, Format I4 scaled by 1e-5
                                 relPosHeading = ubx_payload[24:27]
                                 relPosHeading_in_deg = int.from_bytes(relPosHeading, "little", signed=False)/100000
-                                print(f'Relative Length {relPosHeading_in_deg}')
+                                print(f'Relative Bearing {relPosHeading_in_deg}')
         # Check for NMEA0183, leading with a $ symbol
         elif byte1 == b"\x24":
             nmea_full_bytes = Serial_Port1.readline()
