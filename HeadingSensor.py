@@ -12,6 +12,7 @@ By: JOR
 
 from datetime import datetime
 import serial
+import binascii
 
 import ubx.ClassID as ubc
 import ubx.MessageID as ubm
@@ -25,14 +26,14 @@ print('3. Outputs to an IP address and port for other applications to use.')
 # Configure the serial port, this should be ttyS0
 Serial_Port1 = serial.Serial(
     # For Windows
-    port='COM13',
+    port='COM11',
     # For RPi
     #port='/dev/ttyS0',
     baudrate=115200,
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
     bytesize=serial.EIGHTBITS,
-    timeout=1
+    timeout=2
 )
 Serial_Port1.flushInput()
 
@@ -58,6 +59,8 @@ try:
                 byte5and6 = Serial_Port1.read(2)
                 length_of_payload = int.from_bytes(byte5and6, "little", signed=False)
                 ubx_payload = Serial_Port1.read(length_of_payload)
+                # For diagnostics
+                print(binascii.hexlify(ubx_payload))
                 ubx_crc = Serial_Port1.read(2)
 
                 if byte3 in ubc.UBX_CLASS:
@@ -66,13 +69,39 @@ try:
                             # NAV-RELPOSNED
                             if byte4 == b"\x3c":
                                 print('NAV-RELPOSNED')
+                                # Version = 1
                                 version = ubx_payload[0]
+                                print(f'Version {version}')
+                                # Reserved = 0
                                 reserved = ubx_payload[1]
-                                refStationId = ubx_payload[2]
-                                iTOW = ubx_payload[3:6]
-                                relPosN = ubx_payload[7]
-                                print(relPosN)
-
+                                print(f'Reserved {reserved}')
+                                # Station ID = 00 00
+                                refStationId = ubx_payload[2:3]
+                                print(f'Referece Station {refStationId}')
+                                # Format U4
+                                iTOW = ubx_payload[4:7]
+                                iTOW_in_ms = int.from_bytes(iTOW, "little", signed=False)
+                                print(f'iTOW {iTOW_in_ms}')
+                                # North, Format I4
+                                relPosN = ubx_payload[8:11]
+                                relPosN_in_cm = int.from_bytes(relPosN, "little", signed=True)
+                                print(f'Relative North {relPosN_in_cm}')
+                                # East, Format I4
+                                relPosE = ubx_payload[12:15]
+                                relPosE_in_cm = int.from_bytes(relPosE, "little", signed=True)
+                                print(f'Relative East {relPosE_in_cm}')
+                                # Down, Format I4
+                                relPosD = ubx_payload[16:19]
+                                relPosD_in_cm = int.from_bytes(relPosD, "little", signed=True)
+                                print(f'Relative Down {relPosD_in_cm}')
+                                # Length, Format I4
+                                relPosLength = ubx_payload[20:23]
+                                relPosLength_in_cm = int.from_bytes(relPosLength, "little", signed=False)
+                                print(f'Relative Length {relPosLength_in_cm}')
+                                # Heading, Format I4 scaled by 1e-5
+                                relPosHeading = ubx_payload[24:27]
+                                relPosHeading_in_deg = int.from_bytes(relPosHeading, "little", signed=False)/100000
+                                print(f'Relative Length {relPosHeading_in_deg}')
         # Check for NMEA0183, leading with a $ symbol
         elif byte1 == b"\x24":
             nmea_full_bytes = Serial_Port1.readline()
