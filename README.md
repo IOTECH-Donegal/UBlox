@@ -8,4 +8,6 @@ Testing is on
 - A Pi Zero running latest Raspbian Buster and Python 3.9
 
 Edit HeadingSensor.py to select the correct comm port, nothing automatic here!
-This code is currently an alpha version, no error checking, etc.
+This code is currently an alpha version
+- Limited error checking
+- CRC verification
