@@ -1,6 +1,7 @@
 UBX_NAV = {
     b"\x01": "NAV-POSECEF",
     b"\x02": "NAV-POSLLH",
+    b"\x07": "NAV-PVT",
     b"\x3c": "NAV-RELPOSNED"
 }
 
