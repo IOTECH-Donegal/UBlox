@@ -12,6 +12,7 @@ By: JOR
 
 import serial
 import sys
+import binascii
 import ubx.ClassID as ubc
 import ubx.MessageID as ubm
 import ubx.Parser

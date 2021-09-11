@@ -2,7 +2,7 @@
 Parser for UBX sentences.
 Only sentences used are coded for.
 '''
-
+import binascii
 
 def nav_relposned(ubx_payload):
     '''
@@ -11,6 +11,7 @@ def nav_relposned(ubx_payload):
     '''
 
     debug = 0
+    # print(binascii.hexlify(ubx_payload))
 
     if debug == 1:
         # Version = 1
@@ -23,21 +24,21 @@ def nav_relposned(ubx_payload):
         iTOW = ubx_payload[4:7]
         iTOW_in_ms = int.from_bytes(iTOW, "little", signed=False)
         # North, Format I4
-        relPosN = ubx_payload[8:11]
+        relPosN = ubx_payload[8:12]
         relPosN_in_cm = int.from_bytes(relPosN, "little", signed=True)
         # East, Format I4
-        relPosE = ubx_payload[12:15]
+        relPosE = ubx_payload[12:16]
         relPosE_in_cm = int.from_bytes(relPosE, "little", signed=True)
         # Down, Format I4
-        relPosD = ubx_payload[16:19]
+        relPosD = ubx_payload[16:20]
         relPosD_in_cm = int.from_bytes(relPosD, "little", signed=True)
         # Length, Format I4
-        relPosLength = ubx_payload[20:23]
-        relPosLength_in_cm = int.from_bytes(relPosLength, "little", signed=False)
+        relPosLength = ubx_payload[20:24]
+        relPosLength_in_cm = int.from_bytes(relPosLength, "little", signed=True)
 
         print(f'Version {version}')
         print(f'Reserved {reserved}')
-        print(f'Referece Station {refStationId}')
+        print(f'Reference Station {refStationId}')
         print(f'iTOW {iTOW_in_ms}')
         print(f'Relative North {relPosN_in_cm}')
         print(f'Relative East {relPosE_in_cm}')
@@ -45,8 +46,9 @@ def nav_relposned(ubx_payload):
         print(f'Relative Length {relPosLength_in_cm}')
 
     # Heading, Format I4 scaled by 1e-5
-    relPosHeading = ubx_payload[24:27]
-    relPosHeading_in_deg = int.from_bytes(relPosHeading, "little", signed=False) / 100000
+    relPosHeading = ubx_payload[24:28]
+    relPosHeading_in_deg = int.from_bytes(relPosHeading, "little", signed=True) / 100000
+    # print(f'Heading {relPosHeading_in_deg}')
 
     return relPosHeading_in_deg
 
