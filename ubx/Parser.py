@@ -102,8 +102,8 @@ def nav_posllh(ubx_payload):
         print(f'Longitude {lon_in_degrees} degrees')
         print(f'Latitude {lat_in_degrees} degrees')
         print('Last digit (7) = .011 meters')
-        print(f'Altitude about elipsoid {alt} meters')
-        print(f'Horizonal accuracy {hAcc_in_mm} millimeters')
+        print(f'Altitude above elipsoid {alt} meters')
+        print(f'Horizontal accuracy {hAcc_in_mm} millimeters')
         print(f'Vertical accuracy {vAcc_in_mm} millimeters')
 
     return lon_in_degrees, lat_in_degrees, alt, hAcc, vAcc
