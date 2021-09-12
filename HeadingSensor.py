@@ -85,15 +85,16 @@ try:
 
                 # Check if a valid class
                 if byte3 in ubc.UBX_CLASS:
-                    # Check if class = NAV
+                    # Check if class = NAV (x01)
                     if ubc.UBX_CLASS[byte3] == 'NAV':
                         # Check if a valid message
                         if byte4 in ubm.UBX_NAV:
-                            # Check for NAV-RELPOSNED
+                            # Check for NAV-RELPOSNED (x3c)
                             if byte4 == b"\x3c":
                                 heading = ubx.Parser.nav_relposned(ubx_payload)
-                                print(heading)
-                                # Check for NMEA0183, leading with a $ symbol
+                            # Check for NAV-POSLLH (x02)
+                            elif byte4 == b"\x02":
+                                lon, lat, alt, hAcc, vAcc = ubx.Parser.nav_posllh(ubx_payload)
                             else:
                                 print(f'JOR still needs to do parser for {byte4}')
 
