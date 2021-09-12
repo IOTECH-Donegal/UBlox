@@ -43,13 +43,13 @@ def nav_relposned(ubx_payload):
         print(binascii.hexlify(ubx_payload))
         print(f'Version {version}')
         print(f'Reserved {reserved}')
-        print(f'Reference Station {refStationId}')
+        print(f'Reference Station ID{refStationId}')
         print(f'iTOW {iTOW_in_ms}')
-        print(f'Relative North {relPosN_in_cm}')
-        print(f'Relative East {relPosE_in_cm}')
-        print(f'Relative Down {relPosD_in_cm}')
-        print(f'Relative Length {relPosLength_in_cm}')
-        print(f'Heading {relPosHeading_in_deg}')
+        print(f'Relative North {relPosN_in_cm} Centimeters')
+        print(f'Relative East {relPosE_in_cm} Centimeters')
+        print(f'Relative Down {relPosD_in_cm} Centimeters')
+        print(f'Relative Length {relPosLength_in_cm} Centimeters')
+        print(f'Heading {relPosHeading_in_deg} degrees')
 
 
     return relPosHeading_in_deg
