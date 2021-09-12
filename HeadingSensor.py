@@ -30,7 +30,7 @@ Serial_Port1 = serial.Serial(
     port='COM13',
     # For RPi
     #port='/dev/ttyS0',
-    baudrate=115200,
+    baudrate=38400,
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
     bytesize=serial.EIGHTBITS,
