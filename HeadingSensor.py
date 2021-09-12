@@ -133,7 +133,6 @@ try:
         else:
             print(f"What is {byte1}")
 
-
 except serial.SerialException as err:
     print("Serial port error: {0}".format(err))
 except OSError as err:
