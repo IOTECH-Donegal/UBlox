@@ -8,23 +8,31 @@ Tested with Python >=3.6
 
 By: JOR
     v0.1    28AUG21     First draft
+    v0.2    12SEP21     Read 2 x UBX and prints to screen
 """
 
 import serial
 import sys
-import binascii
+
+# Dictionaries of static data
 import ubx.ClassID as ubc
 import ubx.MessageID as ubm
-import ubx.Parser
 
+# Utilities used by all UBX tools
+from ubx.Utilities import crc
+
+# Unique UBX sentences
+from ubx.relposned import nav_relposned
+from ubx.posllh import nav_posllh
 
 print('***** Heading Sensor *****')
-print('Accepts mixed UBX-RELPOSNED from a serial port and:')
-print('1. Extracts heading information')
+print('Accepts mixed UBX-RELPOSNED, UBX_POSLLH from a serial port:')
+print('1. Extracts heading, position, accuracy information')
+print('NOT YET IMPLEMENTED')
 print('2. Outputs a NMEA sentence for other applications to use.')
 print('3. Optionally, outputs to an IP address and port for other applications to use.')
 
-# Configure the serial port, this should be ttyS0
+# Configure the serial port
 Serial_Port1 = serial.Serial(
     # For Windows
     port='COM13',
@@ -63,15 +71,13 @@ try:
                 length_of_payload = int.from_bytes(byte5and6, "little", signed=False)
                 # Read the buffer for the payload length, should be 64 bytes
                 ubx_payload = Serial_Port1.read(length_of_payload)
-
                 # Last two bytes are 2*CRC
                 ubx_crc_a_int = int.from_bytes(Serial_Port1.read(1), "little")
                 ubx_crc_b_int = int.from_bytes(Serial_Port1.read(1), "little")
-
                 # Calculate CRC using CLASS + MESSAGE + LENGTH + PAYLOAD
                 payload_for_crc = byte3 + byte4 + byte5and6 + ubx_payload
                 # Go get the two CRCs
-                crc_a, crc_b = ubx.Parser.crc(payload_for_crc)
+                crc_a, crc_b = crc(payload_for_crc)
                 # Now catch the error if there is one
                 if ubx_crc_a_int != crc_a:
                     print(f'CRC_A Error, {ubx_crc_a_int} not equal to {crc_a}')
@@ -80,10 +86,10 @@ try:
                     print(f'CRC_B Error, {ubx_crc_b_int} not equal to {crc_b}')
                     break
 
-                # For diagnostics
+                # For diagnostics only
                 # print(binascii.hexlify(ubx_payload))
 
-                # Check if a valid class
+                # Check if a valid UBX class
                 if byte3 in ubc.UBX_CLASS:
                     # Check if class = NAV (x01)
                     if ubc.UBX_CLASS[byte3] == 'NAV':
@@ -91,12 +97,12 @@ try:
                         if byte4 in ubm.UBX_NAV:
                             # Check for NAV-RELPOSNED (x3c)
                             if byte4 == b"\x3c":
-                                heading = ubx.Parser.nav_relposned(ubx_payload)
+                                heading = nav_relposned(ubx_payload)
                             # Check for NAV-POSLLH (x02)
                             elif byte4 == b"\x02":
-                                lon, lat, alt, hAcc, vAcc = ubx.Parser.nav_posllh(ubx_payload)
+                                lon, lat, alt, hAcc, vAcc = nav_posllh(ubx_payload)
                             else:
-                                print(f'JOR still needs to do parser for {byte4}')
+                                print(f'JOR still needs to do parser for {byte4}!!')
 
         # Check for NMEA0183, leading with a $ symbol
         elif byte1 == b"\x24":
@@ -129,7 +135,7 @@ try:
 
 
 except serial.SerialException as err:
-    print("Serial lort error: {0}".format(err))
+    print("Serial port error: {0}".format(err))
 except OSError as err:
     print("OS error: {0}".format(err))
 except ValueError as err:
