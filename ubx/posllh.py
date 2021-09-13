@@ -6,7 +6,7 @@ def nav_posllh(ubx_payload):
     :return: lon, lat, alt, hAcc, vAcc
     '''
 
-    debug = 1
+    debug = 0
     try:
         iTOW = ubx_payload[0:4]
         iTOW_in_ms = int.from_bytes(iTOW, "little", signed=False)
@@ -45,7 +45,7 @@ def nav_posllh(ubx_payload):
             print(f'Horizontal accuracy = {hAcc_in_mm} millimeters')
             print(f'Vertical accuracy = {vAcc_in_mm} millimeters')
 
-        return lon_in_degrees, lat_in_degrees, alt, hAcc, vAcc
+        return lon_in_degrees, lat_in_degrees, alt, hAcc_in_mm, vAcc_in_mm
 
     except ValueError as error:
         print(f'Exception in Parser-nav_relposned {error}')

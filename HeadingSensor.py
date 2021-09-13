@@ -13,6 +13,7 @@ By: JOR
 
 import serial
 import sys
+from datetime import datetime
 
 # Dictionaries of static data
 import ubx.ClassID as ubc
@@ -31,6 +32,15 @@ print('1. Extracts heading, position, accuracy information')
 print('NOT YET IMPLEMENTED')
 print('2. Outputs a NMEA sentence for other applications to use.')
 print('3. Optionally, outputs to an IP address and port for other applications to use.')
+
+# Create the log file
+def logfilename():
+    now = datetime.now()
+    return '.\logfiles\BinaryLogger-%0.4d%0.2d%0.2d-%0.2d%0.2d%0.2d.ubx' % \
+                (now.year, now.month, now.day,
+                 now.hour, now.minute, now.second)
+
+ubx_log_file = logfilename()
 
 # Configure the serial port
 Serial_Port1 = serial.Serial(
@@ -71,9 +81,12 @@ try:
                 length_of_payload = int.from_bytes(byte5and6, "little", signed=False)
                 # Read the buffer for the payload length, should be 64 bytes
                 ubx_payload = Serial_Port1.read(length_of_payload)
-                # Last two bytes are 2*CRC
-                ubx_crc_a_int = int.from_bytes(Serial_Port1.read(1), "little")
-                ubx_crc_b_int = int.from_bytes(Serial_Port1.read(1), "little")
+                # Last two bytes are 2*CRC, save them for later use
+                ubx_crc_a = Serial_Port1.read(1)
+                ubx_crc_b = Serial_Port1.read(1)
+                # Then convert them to INT
+                ubx_crc_a_int = int.from_bytes(ubx_crc_a, "little")
+                ubx_crc_b_int = int.from_bytes(ubx_crc_b, "little")
                 # Calculate CRC using CLASS + MESSAGE + LENGTH + PAYLOAD
                 payload_for_crc = byte3 + byte4 + byte5and6 + ubx_payload
                 # Go get the two CRCs
@@ -86,6 +99,9 @@ try:
                     print(f'CRC_B Error, {ubx_crc_b_int} not equal to {crc_b}')
                     break
 
+                payload_for_save = byte1 + byte2 + payload_for_crc + ubx_crc_a + ubx_crc_b
+                with open (ubx_log_file, 'ab') as file:
+                    file.write(payload_for_save)
                 # For diagnostics only
                 # print(binascii.hexlify(ubx_payload))
 
@@ -97,9 +113,11 @@ try:
                         if byte4 in ubm.UBX_NAV:
                             # Check for NAV-RELPOSNED (x3c)
                             if byte4 == b"\x3c":
+                                print('UBX-NAV-RELPOSNED')
                                 heading = nav_relposned(ubx_payload)
                             # Check for NAV-POSLLH (x02)
                             elif byte4 == b"\x02":
+                                print('UBX-NAV-POSLLH')
                                 lon, lat, alt, hAcc, vAcc = nav_posllh(ubx_payload)
                             else:
                                 print(f'JOR still needs to do parser for {byte4}!!')

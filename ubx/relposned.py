@@ -6,7 +6,7 @@ def nav_relposned(ubx_payload):
     :return: relPosHeading_in_deg
     '''
 
-    debug = 1
+    debug = 0
     try:
         # Version = 1
         version = ubx_payload[0]
