@@ -9,3 +9,7 @@ UBX_RXM = {
     b"\x02": "RXM-MEASX",
     b"\x32": "RXM-RTCM"
 }
+
+UBX_SEC = {
+    b"\x03": "SEC-UNIQID"
+}

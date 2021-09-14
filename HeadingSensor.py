@@ -25,6 +25,7 @@ from ubx.Utilities import crc
 # Unique UBX sentences
 from ubx.relposned import nav_relposned
 from ubx.posllh import nav_posllh
+from ubx.secuniqid import sec_uniqid
 
 print('***** Heading Sensor *****')
 print('Accepts mixed UBX-RELPOSNED, UBX_POSLLH from a serial port:')
@@ -33,10 +34,11 @@ print('NOT YET IMPLEMENTED')
 print('2. Outputs a NMEA sentence for other applications to use.')
 print('3. Optionally, outputs to an IP address and port for other applications to use.')
 
+
 # Create the log file
 def logfilename():
     now = datetime.now()
-    return '.\logfiles\BinaryLogger-%0.4d%0.2d%0.2d-%0.2d%0.2d%0.2d.ubx' % \
+    return '.\logfiles\%0.4d%0.2d%0.2d-%0.2d%0.2d%0.2d.ubx' % \
                 (now.year, now.month, now.day,
                  now.hour, now.minute, now.second)
 
@@ -45,7 +47,7 @@ ubx_log_file = logfilename()
 # Configure the serial port
 Serial_Port1 = serial.Serial(
     # For Windows
-    port='COM13',
+    port='COM10',
     # For RPi
     #port='/dev/ttyS0',
     baudrate=38400,
@@ -56,9 +58,15 @@ Serial_Port1 = serial.Serial(
 )
 Serial_Port1.flushInput()
 
+
 # Main Loop
 try:
     print("press [ctrl][c] at any time to exit...")
+
+    # Find the serial number of the UBlox device
+    ubx_sec_uniqid = b'\xB5\x62\x27\x03\x00\x00\x2A\xA5'
+    Serial_Port1.write(ubx_sec_uniqid)
+
     # Continuous loop until [ctrl][c]
     while True:
         # Read the first byte, if no byte, loop
@@ -121,6 +129,17 @@ try:
                                 lon, lat, alt, hAcc, vAcc = nav_posllh(ubx_payload)
                             else:
                                 print(f'JOR still needs to do parser for {byte4}!!')
+                    # Check if class = SEC (x27)
+                    if ubc.UBX_CLASS[byte3] == 'SEC':
+                        if byte4 in ubm.UBX_SEC:
+                            # Check for SEC-UNIQID (x03)
+                            if byte4 == b"\x03":
+                                uniqueid = sec_uniqid(ubx_payload)
+                                print(f'UBX-SEC-UNIQID {uniqueid}')
+
+
+                else:
+                    print(f'No class definition for {byte3}')
 
         # Check for NMEA0183, leading with a $ symbol
         elif byte1 == b"\x24":
