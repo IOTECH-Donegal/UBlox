@@ -13,20 +13,10 @@ By: JOR
 
 import serial
 import sys
-from datetime import datetime
-
-# Dictionaries of static data
-import ubx.ClassID as ubc
-import ubx.MessageID as ubm
 
 # Utilities used by all UBX tools
 from ubx.Utilities import ubx_crc, log_file_name
 from ubx.Parser import ubx_parser
-
-# Unique UBX sentences
-from ubx.relposned import nav_relposned
-from ubx.posllh import nav_posllh
-from ubx.secuniqid import sec_uniqid
 
 print('***** Heading Sensor *****')
 print('Accepts mixed UBX-RELPOSNED, UBX_POSLLH from a serial port:')
@@ -51,14 +41,13 @@ Serial_Port1 = serial.Serial(
 )
 Serial_Port1.flushInput()
 
-
 # Main Loop
 try:
     print("press [ctrl][c] at any time to exit...")
 
-    # Find the serial number of the UBlox device
-    ubx_sec_uniqid = b'\xB5\x62\x27\x03\x00\x00\x2A\xA5'
-    Serial_Port1.write(ubx_sec_uniqid)
+    # Find the serial number of the UBlox device, send the query, it will be the first sentence back
+    ubx_sec_uniqid_query = b'\xB5\x62\x27\x03\x00\x00\x2A\xA5'
+    Serial_Port1.write(ubx_sec_uniqid_query)
 
     # Continuous loop until [ctrl][c]
     while True:
@@ -80,7 +69,7 @@ try:
                 byte5and6 = Serial_Port1.read(2)
                 # Calculate the length of the payload
                 length_of_payload = int.from_bytes(byte5and6, "little", signed=False)
-                # Read the buffer for the payload length, should be 64 bytes
+                # Read the buffer for the payload length
                 ubx_payload = Serial_Port1.read(length_of_payload)
                 # Last two bytes are 2*CRC, save them for later use
                 ubx_crc_a = Serial_Port1.read(1)

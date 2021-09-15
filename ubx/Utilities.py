@@ -5,9 +5,6 @@ Utilities for UBX sentences.
 from datetime import datetime
 
 
-
-
-
 def log_file_name(extension):
     """
     Create a file name in the logfiles directory, based on current data and time

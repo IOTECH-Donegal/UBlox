@@ -3,6 +3,7 @@ from ubx.relposned import nav_relposned
 from ubx.posllh import nav_posllh
 from ubx.secuniqid import sec_uniqid
 
+
 # Dictionaries of static data
 import ubx.ClassID as ubc
 import ubx.MessageID as ubm
