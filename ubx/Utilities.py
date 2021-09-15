@@ -1,6 +1,42 @@
 '''
 Utilities for UBX sentences.
 '''
+from datetime import datetime
+
+
+def log_file_name(extension):
+    now = datetime.now()
+    log_file_name = '.\logfiles\%0.4d%0.2d%0.2d-%0.2d%0.2d%0.2d' % \
+                (now.year, now.month, now.day,
+                 now.hour, now.minute, now.second)
+    return log_file_name + extension
+
+
+
+def ubx_crc(payload_for_crc,ubx_crc_a, ubx_crc_b):
+    # Convert CRC bytes to INT
+    ubx_crc_a_int = int.from_bytes(ubx_crc_a, "little")
+    ubx_crc_b_int = int.from_bytes(ubx_crc_b, "little")
+
+    # Go get the two CRCs
+    crc_a = 0
+    crc_b = 0
+
+    for byte in payload_for_crc:
+        crc_a += byte
+        crc_a &= 0xFF
+        crc_b += crc_a
+        crc_b &= 0xFF
+
+    # Now catch the error if there is one
+    if ubx_crc_a_int != crc_a:
+        print(f'CRC_A Error, {ubx_crc_a_int} not equal to {crc_a}')
+        return False
+    if ubx_crc_b_int != crc_b:
+        print(f'CRC_B Error, {ubx_crc_b_int} not equal to {crc_b}')
+        return False
+
+    return True
 
 
 def crc(ubx_payload):
