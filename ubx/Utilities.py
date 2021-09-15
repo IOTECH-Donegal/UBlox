@@ -1,16 +1,24 @@
-'''
+"""
 Utilities for UBX sentences.
-'''
+"""
+
 from datetime import datetime
 
 
+
+
+
 def log_file_name(extension):
+    """
+    Create a file name in the logfiles directory, based on current data and time
+    Requires the computer to have an RTC or synched clock
+    """
+
     now = datetime.now()
     log_file_name = '.\logfiles\%0.4d%0.2d%0.2d-%0.2d%0.2d%0.2d' % \
                 (now.year, now.month, now.day,
                  now.hour, now.minute, now.second)
     return log_file_name + extension
-
 
 
 def ubx_crc(payload_for_crc,ubx_crc_a, ubx_crc_b):
@@ -39,27 +47,11 @@ def ubx_crc(payload_for_crc,ubx_crc_a, ubx_crc_b):
     return True
 
 
-def crc(ubx_payload):
-    """
-    8-bit Fletcher algorithm, which is used in the TCP standard RFC 1145
-    From UBlox Interface Description manual
-    """
-
-    crc_a = 0
-    crc_b = 0
-
-    for byte in ubx_payload:
-        crc_a += byte
-        crc_a &= 0xFF
-        crc_b += crc_a
-        crc_b &= 0xFF
-    return crc_a, crc_b
-
-'''
-Time/date as an integer week number (TOW)
-and a time of week expressed in seconds.
-'''
 def itow(iTOW_in_ms):
+    """
+    Time/date as an integer week number (TOW)
+    and a time of week expressed in seconds.
+    """
     # Convert from ms to seconds
     itow_total_seconds = iTOW_in_ms / 1000
     # Calcuate number of seconds in

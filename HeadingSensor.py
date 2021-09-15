@@ -21,6 +21,7 @@ import ubx.MessageID as ubm
 
 # Utilities used by all UBX tools
 from ubx.Utilities import ubx_crc, log_file_name
+from ubx.Parser import ubx_parser
 
 # Unique UBX sentences
 from ubx.relposned import nav_relposned
@@ -33,7 +34,6 @@ print('1. Extracts heading, position, accuracy information')
 print('NOT YET IMPLEMENTED')
 print('2. Outputs a NMEA sentence for other applications to use.')
 print('3. Optionally, outputs to an IP address and port for other applications to use.')
-
 
 ubx_log_file = log_file_name('.ubx')
 
@@ -87,37 +87,16 @@ try:
                 ubx_crc_b = Serial_Port1.read(1)
                 # Calculate CRC using CLASS + MESSAGE + LENGTH + PAYLOAD
                 payload_for_crc = byte3 + byte4 + byte5and6 + ubx_payload
+                # If the CRC is good, proceed
                 if ubx_crc(payload_for_crc,ubx_crc_a, ubx_crc_b):
+                    # Log the ubx bytes
                     payload_for_save = byte1 + byte2 + payload_for_crc + ubx_crc_a + ubx_crc_b
                     with open (ubx_log_file, 'ab') as file:
                         file.write(payload_for_save)
-                    # Check if a valid UBX class
-                    if byte3 in ubc.UBX_CLASS:
-                        # Check if class = NAV (x01)
-                        if ubc.UBX_CLASS[byte3] == 'NAV':
-                            # Check if a valid message
-                            if byte4 in ubm.UBX_NAV:
-                                # Check for NAV-RELPOSNED (x3c)
-                                if byte4 == b"\x3c":
-                                    print('UBX-NAV-RELPOSNED')
-                                    heading = nav_relposned(ubx_payload)
-                                # Check for NAV-POSLLH (x02)
-                                elif byte4 == b"\x02":
-                                    print('UBX-NAV-POSLLH')
-                                    lon, lat, alt, hAcc, vAcc = nav_posllh(ubx_payload)
-                                else:
-                                    print(f'JOR still needs to do parser for {byte4}!!')
-                        # Check if class = SEC (x27)
-                        if ubc.UBX_CLASS[byte3] == 'SEC':
-                            if byte4 in ubm.UBX_SEC:
-                                # Check for SEC-UNIQID (x03)
-                                if byte4 == b"\x03":
-                                    uniqueid = sec_uniqid(ubx_payload)
-                                    print(f'UBX-SEC-UNIQID {uniqueid}')
-
-
+                    # Process the ubx bytes
+                    ubx_parser(byte3, byte4, ubx_payload)
                 else:
-                    print(f'No class definition for {byte3}')
+                    print('Bad CRC')
 
         # Check for NMEA0183, leading with a $ symbol
         elif byte1 == b"\x24":
