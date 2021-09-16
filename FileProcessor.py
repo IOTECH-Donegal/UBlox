@@ -1,22 +1,43 @@
 import os
-from datetime import datetime
+import csv
 
 # Utilities used by all UBX tools
 from ubx.Utilities import ubx_crc
-from ubx.Parser import ubx_parser
+from ubx.UBXParser import UBXParser
 
-# Dictionaries of static data
-import ubx.ClassID as ubc
-import ubx.MessageID as ubm
+# Instantiate an object to parse UBX
+myUBX = UBXParser()
 
-# Unique UBX sentences
-from ubx.relposned import nav_relposned
-from ubx.posllh import nav_posllh
 
 # Look through the raw data files
 directory = './logfiles'
-# Open every file in sequence
 
+
+def save_csv():
+    output_file_name = 'ProcessedData/summary.csv'
+    # First check if a CSV file has already been opened
+    if os.path.isfile(output_file_name):
+        output_file = open(output_file_name, 'a', newline='')
+        with output_file:
+            line_data = [myUBX.posllh_TOW, myUBX.longitude, myUBX.latitude, myUBX.altitude, myUBX.heading,
+                            myUBX.vertical_accuracy, myUBX.horizontal_accuracy]
+            writer = csv.writer(output_file)
+            writer.writerow(line_data)
+    else:
+        output_file_name = './ProcessedData/summary.csv'
+        print('Saving data as ' + output_file_name)
+        # Now create the CSV file and headers
+        output_file = open(output_file_name, 'w', newline='')
+        with output_file:
+            file_header = ['Longitude', 'Latitude', 'Altitude', 'TOW']
+            writer = csv.writer(output_file)
+            writer.writerow(file_header)
+
+
+
+
+
+# Open every file in sequence
 for file in os.listdir(directory):
     input_filename = 'logfiles/' + file
     print("Found " + input_filename)
@@ -49,9 +70,9 @@ for file in os.listdir(directory):
                     # If the CRC is good, proceed
                     if ubx_crc(payload_for_crc, ubx_crc_a, ubx_crc_b):
                         # Process the ubx bytes
-                        ubx_parser(byte3, byte4, ubx_payload)
+                        myUBX.ubx_parser(byte3, byte4, ubx_payload)
+                        save_csv()
                     else:
                         print('Bad CRC')
-
 
 

@@ -7,7 +7,9 @@ def sec_uniqid(ubx_payload):
     :return: uniqid
     '''
 
+    # Switch this on for verbose processing
     debug = 0
+
     try:
         # Version = 1
         version = ubx_payload[0]

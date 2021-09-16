@@ -3,6 +3,8 @@ Utilities for UBX sentences.
 """
 
 from datetime import datetime
+import os.path
+
 
 
 def log_file_name(extension):
@@ -61,3 +63,5 @@ def itow(iTOW_in_ms):
     itow_minute = int((itow_total_seconds - (itow_day * day) - (itow_hour * hour)) / minute)
     itow_seconds = int((itow_total_seconds - (itow_day * day) - (itow_hour * hour)) - (itow_minute * minute))
     return itow_day, itow_hour, itow_minute, itow_seconds
+
+

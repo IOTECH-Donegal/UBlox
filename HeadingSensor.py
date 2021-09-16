@@ -16,16 +16,23 @@ import sys
 
 # Utilities used by all UBX tools
 from ubx.Utilities import ubx_crc, log_file_name
-from ubx.Parser import ubx_parser
+from ubx.UBXParser import UBXParser
+
 
 print('***** Heading Sensor *****')
 print('Accepts mixed UBX-RELPOSNED, UBX_POSLLH from a serial port:')
-print('1. Extracts heading, position, accuracy information')
+print('1. Extracts heading, position, accuracy information and logs')
 print('NOT YET IMPLEMENTED')
 print('2. Outputs a NMEA sentence for other applications to use.')
 print('3. Optionally, outputs to an IP address and port for other applications to use.')
 
+# Instantiate an object to parse UBX
+myUBX = UBXParser()
+
+# Get a logfile name for UBX
 ubx_log_file = log_file_name('.ubx')
+# Flag for logging
+logging = 1
 
 # Configure the serial port
 Serial_Port1 = serial.Serial(
@@ -78,12 +85,18 @@ try:
                 payload_for_crc = byte3 + byte4 + byte5and6 + ubx_payload
                 # If the CRC is good, proceed
                 if ubx_crc(payload_for_crc,ubx_crc_a, ubx_crc_b):
-                    # Log the ubx bytes
-                    payload_for_save = byte1 + byte2 + payload_for_crc + ubx_crc_a + ubx_crc_b
-                    with open (ubx_log_file, 'ab') as file:
-                        file.write(payload_for_save)
+                    # If logging flag is on, log
+                    if logging == 1:
+                        # Log the ubx bytes
+                        payload_for_save = byte1 + byte2 + payload_for_crc + ubx_crc_a + ubx_crc_b
+                        with open (ubx_log_file, 'ab') as file:
+                            file.write(payload_for_save)
                     # Process the ubx bytes
-                    ubx_parser(byte3, byte4, ubx_payload)
+                    myUBX.ubx_parser(byte3, byte4, ubx_payload)
+                    # Now see if there are new values
+                    if myUBX.new_position and myUBX.new_heading:
+                        print('Do NMEA stuff')
+
                 else:
                     print('Bad CRC')
 
@@ -91,13 +104,13 @@ try:
         elif byte1 == b"\x24":
             nmea_full_bytes = Serial_Port1.readline()
             nmea_full_string = nmea_full_bytes.decode("utf-8")
-            print(f'NMEA: {nmea_full_string[0:5]}')
+            print(f'NMEA: Received {nmea_full_string[0:5]}')
 
         # Check for AIS, leading with a ! symbol
         elif byte1 == b"\x21":
             nmea_full_bytes = Serial_Port1.readline()
             nmea_full_string = nmea_full_bytes.decode("utf-8")
-            print(f'AIS: {nmea_full_string[0:5]}')
+            print(f'AIS: Received {nmea_full_string[0:5]}')
 
         # Check for RTCM corrections
         elif byte1 == b"\xd3":
@@ -110,7 +123,7 @@ try:
             # Locate the message ID and convert it to an INT, its 12 bits of 16 so divide by 16
             message_id_bytes = rtcm_payload[0:2]
             message_id_int = int.from_bytes(message_id_bytes, "big") / 16
-            print(f'RTCM3: {str(message_id_int)}')
+            print(f'RTCM3: Received {str(message_id_int)}')
             # Finally extract the RTCM CRC
             rtcm_crc = Serial_Port1.read(3)
         else:

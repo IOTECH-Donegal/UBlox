@@ -6,7 +6,9 @@ def nav_relposned(ubx_payload):
     :return: relPosHeading_in_deg
     '''
 
+    # Switch this on for verbose processing
     debug = 0
+
     try:
         # Version = 1
         version = ubx_payload[0]
@@ -48,7 +50,7 @@ def nav_relposned(ubx_payload):
             print(f'Relative Length = {relPosLength_in_cm} centimeters')
             print(f'Heading = {relPosHeading_in_deg} degrees')
 
-        return relPosHeading_in_deg
+        return relPosHeading_in_deg, iTOW_in_ms
 
     except ValueError as error:
         print(f'Exception in Parser-nav_relposned {error}')
