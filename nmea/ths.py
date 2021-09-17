@@ -13,7 +13,7 @@ def ths(headt, mode_indicator):
     # Calculate the CRC
     crc = calculate_crc(nmea_partial_sentence)
     # Construct the full sentence
-    nmea_full_sentence = "$" + nmea_partial_sentence + crc[2:] + "\r\n"
+    nmea_full_sentence = "$" + nmea_partial_sentence + crc[2:]
 
     return nmea_full_sentence
 
