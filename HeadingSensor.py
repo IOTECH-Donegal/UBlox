@@ -47,8 +47,8 @@ Serial_Port1 = serial.Serial(
     # For Windows
     port='COM10',
     # For RPi
-    #port='/dev/ttyS0',
-    baudrate=38400,
+    #port='/dev/ttySC1',
+    baudrate=115200,
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
     bytesize=serial.EIGHTBITS,
@@ -114,6 +114,8 @@ try:
                         myUBX.new_heading = 0
                         # Send the heading to a multicast address
                         udp_sender(MCAST_GRP, MCAST_PORT, bytes(nmea_full_ths, 'utf-8'))
+                        dummy = b'$GPGGA,092725.00,4717.11399,N,00833.91590,E,1,08,1.01,499.6,M,48.0,M,,*5B'
+                        udp_sender(MCAST_GRP, MCAST_PORT, dummy)
                 else:
                     print('Bad CRC')
 
