@@ -18,6 +18,10 @@ import sys
 from ubx.Utilities import ubx_crc, log_file_name
 from ubx.UBXParser import UBXParser
 
+# utilities for NMEA tools
+from nmea.ths import ths
+from nmea.Utilities import udp_sender
+
 
 print('***** Heading Sensor *****')
 print('Accepts mixed UBX-RELPOSNED, UBX_POSLLH from a serial port:')
@@ -33,6 +37,10 @@ myUBX = UBXParser()
 ubx_log_file = log_file_name('.ubx')
 # Flag for logging
 logging = 1
+# Set UDP multicast information
+MCAST_GRP = '224.1.1.1'
+MCAST_PORT = 5007
+
 
 # Configure the serial port
 Serial_Port1 = serial.Serial(
@@ -94,9 +102,15 @@ try:
                     # Process the ubx bytes
                     myUBX.ubx_parser(byte3, byte4, ubx_payload)
                     # Now see if there are new values
-                    if myUBX.new_position and myUBX.new_heading:
-                        print('Do NMEA stuff')
-
+                    if myUBX.new_heading:
+                        # Convert heading from float to string
+                        heading_string = str(myUBX.heading)
+                        # Create a NMEA sentence
+                        nmea_full_ths = ths(heading_string, "A")
+                        # Processed the old heading, reset the flag
+                        myUBX.new_heading = 0
+                        # Send the heading to a multicast address
+                        udp_sender(MCAST_GRP, MCAST_PORT, nmea_full_ths)
                 else:
                     print('Bad CRC')
 
