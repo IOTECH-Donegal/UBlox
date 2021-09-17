@@ -109,6 +109,7 @@ try:
                         heading_string = str(heading)
                         # Create a NMEA sentence
                         nmea_full_ths = ths(heading_string, "A")
+                        print(nmea_full_ths)
                         # Processed the old heading, reset the flag
                         myUBX.new_heading = 0
                         # Send the heading to a multicast address

@@ -9,7 +9,7 @@ from nmea.Utilities import calculate_crc
 
 def ths(headt, mode_indicator):
     # Construct a partial sentence, no $ and no CRC
-    nmea_partial_sentence = "GPTHS," + headt + "," + mode_indicator + "*"
+    nmea_partial_sentence = "GPHDT," + headt + "," + mode_indicator + "*"
     # Calculate the CRC
     crc = calculate_crc(nmea_partial_sentence)
     # Construct the full sentence
