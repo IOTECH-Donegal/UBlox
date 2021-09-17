@@ -111,13 +111,14 @@ try:
                         # Create a NMEA sentence
                         nmea_full_ths = ths(heading_string, "A")
                         nmea_full_hdt = hdt(heading_string)
+                        print(nmea_full_hdt)
                         # Processed the old heading, reset the flag
                         myUBX.new_heading = 0
                         # Send the heading to a multicast address
                         udp_sender(MCAST_GRP, MCAST_PORT, bytes(nmea_full_ths, 'utf-8'))
                         udp_sender(MCAST_GRP, MCAST_PORT, bytes(nmea_full_hdt, 'utf-8'))
-                        dummy = b'$GPGGA,092725.00,4717.11399,N,00833.91590,E,1,08,1.01,499.6,M,48.0,M,,*5B'
-                        udp_sender(MCAST_GRP, MCAST_PORT, dummy)
+                        dummy = '$GPGGA,092725.00,4717.11399,N,00833.91590,E,1,08,1.01,499.6,M,48.0,M,,*5B'
+                        udp_sender(MCAST_GRP, MCAST_PORT, bytes(dummy, 'utf-8'))
                 else:
                     print('Bad CRC')
 

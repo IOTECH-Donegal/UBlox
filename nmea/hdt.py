@@ -11,7 +11,7 @@ from nmea.Utilities import calculate_crc
 
 def hdt(headt):
     # Construct a partial sentence, no $ and no CRC
-    nmea_partial_sentence = "GPHDT," + headt + "T" + "*"
+    nmea_partial_sentence = "GPHDT," + headt + ",T" + "*"
     # Calculate the CRC
     crc = calculate_crc(nmea_partial_sentence)
     # Construct the full sentence
