@@ -103,14 +103,16 @@ try:
                     myUBX.ubx_parser(byte3, byte4, ubx_payload)
                     # Now see if there are new values
                     if myUBX.new_heading:
+                        # Get the heading as a float and round to two places
+                        heading = round(myUBX.heading, 2)
                         # Convert heading from float to string
-                        heading_string = str(myUBX.heading)
+                        heading_string = str(heading)
                         # Create a NMEA sentence
                         nmea_full_ths = ths(heading_string, "A")
                         # Processed the old heading, reset the flag
                         myUBX.new_heading = 0
                         # Send the heading to a multicast address
-                        udp_sender(MCAST_GRP, MCAST_PORT, nmea_full_ths)
+                        udp_sender(MCAST_GRP, MCAST_PORT, bytes(nmea_full_ths, 'utf-8'))
                 else:
                     print('Bad CRC')
 
