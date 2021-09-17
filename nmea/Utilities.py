@@ -8,7 +8,6 @@ def udp_sender(MCAST_GRP, MCAST_PORT, message):
     sock.sendto(message, (MCAST_GRP, MCAST_PORT))
 
 
-
 def validate_crc(nmea_full_sentence):
     """
     Compare a calculated CRC to the received value
@@ -26,8 +25,6 @@ def validate_crc(nmea_full_sentence):
             return False
     except:
         print('Error trying to validate CRC in ' + nmea_full_sentence)
-
-
 
 
 def calculate_crc(nmea_partial_sentence):

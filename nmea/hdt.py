@@ -11,11 +11,12 @@ from nmea.Utilities import calculate_crc
 
 def hdt(headt):
     # Construct a partial sentence, no $ and no CRC
-    nmea_partial_sentence = "GPHDT," + headt + ",T" + "*"
+    nmea_partial_sentence = "GPHDT," + headt + ",T"
+    print(nmea_partial_sentence)
     # Calculate the CRC
     crc = calculate_crc(nmea_partial_sentence)
     # Construct the full sentence
-    nmea_full_sentence = "$" + nmea_partial_sentence + crc[2:]
+    nmea_full_sentence = "$" + nmea_partial_sentence + "*" + crc[2:].upper()
 
     return nmea_full_sentence
 

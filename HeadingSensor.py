@@ -105,7 +105,7 @@ try:
                     # Now see if there are new values
                     if myUBX.new_heading:
                         # Get the heading as a float and round to two places
-                        heading = round(myUBX.heading, 2)
+                        heading = round(myUBX.heading, 4)
                         # Convert heading from float to string
                         heading_string = str(heading)
                         # Create a NMEA sentence
