@@ -20,6 +20,7 @@ from ubx.UBXParser import UBXParser
 
 # utilities for NMEA tools
 from nmea.ths import ths
+from nmea.hdt import hdt
 from nmea.Utilities import udp_sender
 
 
@@ -109,11 +110,12 @@ try:
                         heading_string = str(heading)
                         # Create a NMEA sentence
                         nmea_full_ths = ths(heading_string, "A")
-                        print(nmea_full_ths)
+                        nmea_full_hdt = hdt(heading_string)
                         # Processed the old heading, reset the flag
                         myUBX.new_heading = 0
                         # Send the heading to a multicast address
                         udp_sender(MCAST_GRP, MCAST_PORT, bytes(nmea_full_ths, 'utf-8'))
+                        udp_sender(MCAST_GRP, MCAST_PORT, bytes(nmea_full_hdt, 'utf-8'))
                         dummy = b'$GPGGA,092725.00,4717.11399,N,00833.91590,E,1,08,1.01,499.6,M,48.0,M,,*5B'
                         udp_sender(MCAST_GRP, MCAST_PORT, dummy)
                 else:
