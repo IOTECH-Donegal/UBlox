@@ -34,7 +34,9 @@ def calculate_crc(nmea_partial_sentence):
 
     # Reset to zero
     calculated_checksum = 0
-    # Go through each character and XOR
+    # Go through each character and XOR, create an integer
     for character in nmea_partial_sentence:
         calculated_checksum ^= ord(character)
-    return hex(calculated_checksum)
+    # Convert to hex, 2 digits
+    calculated_checksum_2_digits = format(calculated_checksum, '02X')
+    return calculated_checksum_2_digits

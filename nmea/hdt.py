@@ -15,8 +15,9 @@ def hdt(headt):
     print(nmea_partial_sentence)
     # Calculate the CRC
     crc = calculate_crc(nmea_partial_sentence)
+
     # Construct the full sentence
-    nmea_full_sentence = "$" + nmea_partial_sentence + "*" + crc[2:].upper()
+    nmea_full_sentence = "$" + nmea_partial_sentence + "*" + crc
 
     return nmea_full_sentence
 
