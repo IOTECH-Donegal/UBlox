@@ -27,9 +27,8 @@ from nmea.Utilities import udp_sender
 print('***** Heading Sensor *****')
 print('Accepts mixed UBX-RELPOSNED, UBX_POSLLH from a serial port:')
 print('1. Extracts heading, position, accuracy information and logs')
-print('NOT YET IMPLEMENTED')
-print('2. Outputs a NMEA sentence for other applications to use.')
-print('3. Optionally, outputs to an IP address and port for other applications to use.')
+print('2. Outputs a NMEA sentence for other applications to use: only implemented to network in this version).')
+print('3. Outputs to an IP address and port for other applications to use.')
 
 # Instantiate an object to parse UBX
 myUBX = UBXParser()
@@ -117,10 +116,6 @@ try:
                         # Send the heading to a multicast address
                         udp_sender(MCAST_GRP, MCAST_PORT, bytes(nmea_full_ths, 'utf-8'))
                         udp_sender(MCAST_GRP, MCAST_PORT, bytes(nmea_full_hdt, 'utf-8'))
-                        #dummy1 = '$GPGGA,092725.00,4717.11399,N,00833.91590,E,1,08,1.01,499.6,M,48.0,M,,*5B'
-                        #udp_sender(MCAST_GRP, MCAST_PORT, bytes(dummy1, 'utf-8'))
-                        #dummy2 = '$GPHDT,75.5664,T*36'
-                        #udp_sender(MCAST_GRP, MCAST_PORT, bytes(dummy2, 'utf-8'))
                 else:
                     print('Bad CRC')
 
