@@ -2,21 +2,21 @@ import os
 import csv
 
 # Utilities used by all UBX tools
-from ubx.Utilities import ubx_crc
+from ubx.Utilities import ubx_crc, log_file_name
 from ubx.UBXParser import UBXParser
 
 # Instantiate an object to parse UBX
 myUBX = UBXParser()
 
-
 # Look through the raw data files
-directory = './logfiles'
+directory = './LogFiles'
 
 
 def save_csv():
     output_file_name = 'ProcessedData/summary.csv'
     # First check if a CSV file has already been opened
     if os.path.isfile(output_file_name):
+        # Append to summary file
         output_file = open(output_file_name, 'a', newline='')
         with output_file:
             line_data = [myUBX.posllh_TOW, myUBX.longitude, myUBX.latitude, myUBX.altitude, myUBX.heading,
@@ -34,11 +34,8 @@ def save_csv():
             writer.writerow(file_header)
 
 
-
-
-
-# Open every file in sequence
 for file in os.listdir(directory):
+    # Open every file in sequence
     input_filename = 'logfiles/' + file
     print("Found " + input_filename)
 
