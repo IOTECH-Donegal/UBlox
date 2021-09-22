@@ -4,6 +4,7 @@ import unittest
 
 from ubx.relposned import nav_relposned
 from ubx.posllh import nav_posllh
+from ubx.secuniqid import sec_uniqid
 
 
 class ubxTest(unittest.TestCase):
@@ -24,5 +25,14 @@ class ubxTest(unittest.TestCase):
             message = ubx_message.read()
             # drop the first 6 bytes
             result = nav_posllh(message[6:])
+            self.assertEqual(actual, result)
+
+    def test_uniqid(self):
+        with open('uniqid.ubx', 'rb') as ubx_message:
+            # Return value is the heading
+            actual = ('194DAA9258')
+            message = ubx_message.read()
+            # drop the first 6 bytes
+            result = sec_uniqid(message[6:])
             self.assertEqual(actual, result)
 
