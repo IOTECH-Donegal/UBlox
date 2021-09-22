@@ -1,14 +1,13 @@
 """"
-Main routine for HeadingSensor
+UBX
 Forked from the Comm module of SD-Node, written c. 2017
+Later mods from HeadingSensor, c. 2021
 Takes a serial UBX input, parses and extracts heading information
-creates a NMEA sentence to forward the data and
-optionally, forwards to a UDP address:port
+Optionally, forwards to a UDP address:port
 Tested with Python >=3.6
 
 By: JOR
-    v0.1    28AUG21     First draft
-    v0.2    12SEP21     Read 2 x UBX and prints to screen
+    v0.1    22SEP21     First draft
 """
 
 import serial
@@ -18,17 +17,10 @@ import sys
 from ubx.Utilities import ubx_crc, log_file_name
 from ubx.UBXParser import UBXParser
 
-# utilities for NMEA tools
-from nmea.ths import ths
-from nmea.hdt import hdt
-from nmea.Utilities import udp_sender
-
-
 print('***** Heading Sensor *****')
-print('Accepts mixed UBX-RELPOSNED, UBX_POSLLH from a serial port:')
-print('1. Extracts heading, position, accuracy information and logs')
-print('2. Outputs a NMEA sentence for other applications to use: only implemented to network in this version).')
-print('3. Outputs to an IP address and port for other applications to use.')
+print('Accepts UBX from a serial port:')
+print('1. Extracts information and logs')
+print('2. Outputs to an IP address/port for other applications to use.')
 
 # Instantiate an object to parse UBX
 myUBX = UBXParser()
@@ -37,15 +29,11 @@ myUBX = UBXParser()
 ubx_log_file = log_file_name('.ubx')
 # Flag for logging
 logging = 1
-# Set UDP multicast information
-MCAST_GRP = '224.1.1.1'
-MCAST_PORT = 5007
-
 
 # Configure the serial port
 Serial_Port1 = serial.Serial(
     # For Windows
-    port='COM10',
+    port='COM13',
     # For RPi
     #port='/dev/ttySC1',
     baudrate=115200,
@@ -102,20 +90,6 @@ try:
                     # Process the ubx bytes
                     myUBX.ubx_parser(byte3, byte4, ubx_payload)
                     # Now see if there are new values
-                    if myUBX.new_heading:
-                        # Get the heading as a float and round to two places
-                        heading = round(myUBX.heading, 4)
-                        # Convert heading from float to string
-                        heading_string = str(heading)
-                        # Create a NMEA sentence
-                        nmea_full_ths = ths(heading_string, "A")
-                        nmea_full_hdt = hdt(heading_string)
-                        print(nmea_full_hdt)
-                        # Processed the old heading, reset the flag
-                        myUBX.new_heading = 0
-                        # Send the heading to a multicast address
-                        udp_sender(MCAST_GRP, MCAST_PORT, bytes(nmea_full_ths, 'utf-8'))
-                        udp_sender(MCAST_GRP, MCAST_PORT, bytes(nmea_full_hdt, 'utf-8'))
                 else:
                     print('Bad CRC')
 
