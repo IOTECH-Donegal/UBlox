@@ -9,7 +9,7 @@ from ubx.UBXParser import UBXParser
 myUBX = UBXParser()
 
 # Look through the raw data files
-directory = './LogFiles'
+directory = './logfiles'
 
 
 def save_csv():

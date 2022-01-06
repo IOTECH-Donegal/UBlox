@@ -2,9 +2,9 @@ import unittest
 
 # Unique UBX sentences
 
-from ubx.relposned import nav_relposned
-from ubx.posllh import nav_posllh
-from ubx.secuniqid import sec_uniqid
+from ubx.nav import relposned
+from ubx.nav import posllh
+from ubx.sec import uniqid
 
 
 class ubxTest(unittest.TestCase):
@@ -15,7 +15,7 @@ class ubxTest(unittest.TestCase):
             actual = (344.54628, 159213000)
             message = ubx_message.read()
             # drop the first 6 bytes
-            result = nav_relposned(message[6:])
+            result = relposned(message[6:])
             self.assertEqual(actual, result)
 
     def test_posllh(self):
@@ -24,7 +24,7 @@ class ubxTest(unittest.TestCase):
             actual = (-7.4349109, 55.1666986, 163.582, 19, 29, 159802000)
             message = ubx_message.read()
             # drop the first 6 bytes
-            result = nav_posllh(message[6:])
+            result = posllh(message[6:])
             self.assertEqual(actual, result)
 
     def test_uniqid(self):
@@ -33,6 +33,6 @@ class ubxTest(unittest.TestCase):
             actual = ('194DAA9258')
             message = ubx_message.read()
             # drop the first 6 bytes
-            result = sec_uniqid(message[6:])
+            result = uniqid(message[6:])
             self.assertEqual(actual, result)
 

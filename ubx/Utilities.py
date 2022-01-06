@@ -3,8 +3,19 @@ Utilities for UBX sentences.
 """
 
 from datetime import datetime
-import os.path
+import sys
 
+
+def path_name():
+    # Operating system dependent stuff
+    this_os = sys.platform
+    if this_os == 'win32':
+        return './logfiles/'
+    elif this_os == 'linux':
+        return '/home/pi/logfiles/'
+    else:
+        print(f'Unsupported OS: {this_os}')
+        exit(0)
 
 
 def log_file_name(extension):
@@ -14,7 +25,7 @@ def log_file_name(extension):
     """
 
     now = datetime.now()
-    log_file_name = '.\logfiles\%0.4d%0.2d%0.2d-%0.2d%0.2d%0.2d' % \
+    log_file_name = '%0.4d%0.2d%0.2d-%0.2d%0.2d%0.2d' % \
                 (now.year, now.month, now.day,
                  now.hour, now.minute, now.second)
     return log_file_name + extension
