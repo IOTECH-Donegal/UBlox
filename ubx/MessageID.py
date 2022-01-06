@@ -10,6 +10,11 @@ UBX_RXM = {
     b"\x32": "RXM-RTCM"
 }
 
+UBX_ESF = {
+    b"\x02": "ESF-MEAS",
+    b"\x10": "ESF-STATUS"
+}
+
 UBX_SEC = {
     b"\x03": "SEC-UNIQID"
 }

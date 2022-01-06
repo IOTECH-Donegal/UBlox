@@ -1,7 +1,7 @@
 # Typical return value = B5 62 27 03 09 00 01 00 00 00 19 4D AA 92 58 2E B6
 # Giving a serial number of 19 4D AA 92 58
 
-def sec_uniqid(ubx_payload):
+def uniqid(ubx_payload):
     '''
     :param ubx_payload:
     :return: uniqid
