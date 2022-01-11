@@ -28,7 +28,7 @@ print('2. Optional: outputs to an IP address/port for other applications to use.
 myUBX = UBXParser()
 
 # Get a logfile name for UBX
-ubx_log_file = path_name() + log_file_name('.ubx')
+ubx_log_file = './logfiles/' + log_file_name('.ubx')
 print(f'Logging as {ubx_log_file}')
 
 
@@ -83,6 +83,10 @@ try:
                         with open (ubx_log_file, 'ab') as file:
                             file.write(payload_for_save)
                     # Process the ubx bytes
+                        # Reset the new data flags
+                        myUBX.new_heading = 0
+                        myUBX.new_position = 0
+                        # Parse
                         myUBX.ubx_parser(byte3, byte4, ubx_payload)
                         # Now see if there are new values
                     else:

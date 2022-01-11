@@ -13,7 +13,7 @@ directory = './logfiles'
 
 
 def save_csv():
-    output_file_name = 'ProcessedData/summary.csv'
+    output_file_name = './processed/summary.csv'
     # First check if a CSV file has already been opened
     if os.path.isfile(output_file_name):
         # Append to summary file
@@ -24,12 +24,12 @@ def save_csv():
             writer = csv.writer(output_file)
             writer.writerow(line_data)
     else:
-        output_file_name = './ProcessedData/summary.csv'
+        output_file_name = './processed/summary.csv'
         print('Saving data as ' + output_file_name)
         # Now create the CSV file and headers
         output_file = open(output_file_name, 'w', newline='')
         with output_file:
-            file_header = ['Longitude', 'Latitude', 'Altitude', 'TOW']
+            file_header = ['TOW', 'Longitude', 'Latitude', 'Altitude', 'Heading', 'V-Accuracy', 'H-Accuracy']
             writer = csv.writer(output_file)
             writer.writerow(file_header)
 
