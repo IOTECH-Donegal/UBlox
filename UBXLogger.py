@@ -21,8 +21,7 @@ from ubx.UBXParser import UBXParser
 
 print('***** UBX Sensor *****')
 print('Accepts UBX from a serial port:')
-print('1. Extracts information and logs')
-print('2. Outputs to an IP address/port for other applications to use.')
+print('1. Logs to a file')
 
 # Instantiate an object to parse UBX
 myUBX = UBXParser()
