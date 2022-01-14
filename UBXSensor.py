@@ -28,7 +28,8 @@ print('2. Outputs to an IP address/port for other applications to use.')
 myUBX = UBXParser()
 
 # Get a logfile name for UBX
-ubx_log_file = './logfiles/' + log_file_name('.ubx')
+# ubx_log_file = './logfiles/' + log_file_name('.ubx')
+ubx_log_file = '/home/pi/UBlox/logfiles/' + log_file_name('.ubx')
 
 print(f'Logging as {ubx_log_file}')
 
@@ -38,7 +39,7 @@ try:
     print("press [ctrl][c] at any time to exit...")
 
     with serial.Serial("/dev/ttySC1") as Serial_Port1:
-        Serial_Port1.baudrate = 38400
+        Serial_Port1.baudrate = 19200
         Serial_Port1.bytesize = serial.EIGHTBITS
         Serial_Port1.parity = serial.PARITY_NONE
         Serial_Port1.stopbits = serial.STOPBITS_ONE
