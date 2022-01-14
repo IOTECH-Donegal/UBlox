@@ -27,7 +27,8 @@ print('1. Logs to a file')
 myUBX = UBXParser()
 
 # Get a logfile name for UBX
-ubx_log_file = './logfiles/' + log_file_name('.ubx')
+# ubx_log_file = './logfiles/' + log_file_name('.ubx')
+ubx_log_file = '/home/pi/UBlox/logfiles/' + log_file_name('.ubx')
 print(f'Logging as {ubx_log_file}')
 
 
