@@ -38,8 +38,8 @@ print(f'Logging as {ubx_log_file}')
 try:
     print("press [ctrl][c] at any time to exit...")
 
-    with serial.Serial("/dev/ttySC1") as Serial_Port1:
-        Serial_Port1.baudrate = 19200
+    with serial.Serial("/dev/ttyAMA4") as Serial_Port1:
+        Serial_Port1.baudrate = 115200
         Serial_Port1.bytesize = serial.EIGHTBITS
         Serial_Port1.parity = serial.PARITY_NONE
         Serial_Port1.stopbits = serial.STOPBITS_ONE
